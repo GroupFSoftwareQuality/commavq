@@ -5,6 +5,9 @@ Test functions include process(example), memmap writing loop, and HuggingFace's 
 Functions are stored in this file to eliminate dependencies so testing changes requires changing test functions. 
 
 Test Cases/Sections: TestProcessExample, TestMemmapOutput, TestSharding, TestEdgeCases, TestReferenceRegression 
+
+Elements tested include BOS/EOT token insertion, sharding and batching logic, and
+correct datatypes and length when writing to memmap
 """
 import os
 import sys
