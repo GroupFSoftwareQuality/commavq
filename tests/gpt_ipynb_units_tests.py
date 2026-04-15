@@ -1,4 +1,6 @@
 import sys
+from pathlib import Path
+
 sys.path.append('..')
 
 import numpy as np
@@ -6,6 +8,9 @@ import torch
 
 from utils.gpt import GPT, GPTConfig
 from utils.vqvae import Decoder, CompressorConfig
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+TOKENS_PATH = REPO_ROOT / "examples" / "tokens.npy"
 
 
 def load_model():
@@ -20,7 +25,7 @@ def load_model():
 
 
 def load_tokens(config):
-    tokens = np.load("../examples/tokens.npy").astype(np.int32)
+    tokens = np.load(TOKENS_PATH).astype(np.int32)
     tokens = np.c_[np.ones(len(tokens), dtype=np.int32)*config.bos_token, tokens]
     tokens = tokens[-(config.block_size//config.tokens_per_frame - 1):].reshape(-1)
     return torch.tensor(tokens, device='cpu')
