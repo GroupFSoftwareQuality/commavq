@@ -13,32 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install pup 
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unzip curl
-          curl -sL https://github.com/ericchiang/pup/releases/download/v0.4.0/pup_v0.4.0_linux_amd64.zip -o pup.zip
-          unzip pup.zip
-          chmod +x pup
-          sudo mv pup /usr/local/bin/
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-      - name: Fetch remote leaderboard page
-        run: wget -qO page.html https://comma.ai/leaderboard
-
-      - name: Extract table
-        run: |
-          pup 'div#commavq_compression_challenge_table table' < page.html > table.html
-
-      - name: Splice HTML into both README files
-        run: |
-          for file in README.md compression/README.md; do
-            awk '
-              /<!-- TABLE-START -->/ { print; system("cat table.html"); skip=1; next }
-              /<!-- TABLE-END -->/   { skip=0 }
-              skip==0               { print }
-            ' "$file" > "${file}.updated"
-            mv "${file}.updated" "$file"
-          done
+      - name: Update leaderboard HTML in README files
+        run: python scripts/update_leaderboard.py README.md compression/README.md
 
       - name: Commit & push if changed
         run: |
